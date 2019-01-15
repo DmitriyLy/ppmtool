@@ -1,6 +1,7 @@
 package io.agintelligence.services;
 
 import io.agintelligence.domain.Project;
+import io.agintelligence.exceptions.ProjectIdException;
 import io.agintelligence.repositories.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,13 @@ public class ProjectService {
     private ProjectRepository projectRepository;
 
     public Project saveOrUpdateProject(Project project) {
-        return projectRepository.save(project);
+
+        try {
+            project.setProjectIdentifier(project.getProjectIdentifier().toUpperCase());
+            return projectRepository.save(project);
+        } catch (Exception e) {
+            throw new ProjectIdException("Project ID '" + project.getProjectIdentifier().toUpperCase() + "' already exists.");
+        }
     }
 
 }
