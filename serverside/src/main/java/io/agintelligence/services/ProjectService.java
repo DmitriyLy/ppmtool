@@ -1,7 +1,9 @@
 package io.agintelligence.services;
 
+import io.agintelligence.domain.Backlog;
 import io.agintelligence.domain.Project;
 import io.agintelligence.exceptions.ProjectIdException;
+import io.agintelligence.repositories.BacklogRepository;
 import io.agintelligence.repositories.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,10 +14,27 @@ public class ProjectService {
     @Autowired
     private ProjectRepository projectRepository;
 
+    @Autowired
+    private BacklogRepository backlogRepository;
+
     public Project saveOrUpdateProject(Project project) {
 
+        String projectIdentifier = getProjectIdentifier(project);
+
         try {
-            project.setProjectIdentifier(project.getProjectIdentifier().toUpperCase());
+            project.setProjectIdentifier(projectIdentifier);
+
+            if (project.getId() == null) {
+                Backlog backlog = new Backlog();
+                project.setBacklog(backlog);
+                backlog.setProject(project);
+                backlog.setProjectIdentifier(projectIdentifier);
+            }
+
+            if (project.getId() != null) {
+                project.setBacklog(backlogRepository.findByProjectIdentifier(projectIdentifier));
+            }
+
             return projectRepository.save(project);
         } catch (Exception e) {
             throw new ProjectIdException("Project ID '" + project.getProjectIdentifier().toUpperCase() + "' already exists.");
@@ -45,6 +64,10 @@ public class ProjectService {
         }
 
         projectRepository.delete(project);
+    }
+
+    private String getProjectIdentifier(Project project) {
+        return  project.getProjectIdentifier().toUpperCase();
     }
 
 }
