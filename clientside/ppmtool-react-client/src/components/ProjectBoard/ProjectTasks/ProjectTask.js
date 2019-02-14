@@ -5,12 +5,28 @@ export default class ProjectTask extends Component {
     render() {
 
         const { project_task } = this.props;
+        let priorityString;
+        let priorityClass;
+
+        if (project_task.priority === 1) {
+            priorityString = "HIGH";
+            priorityClass = "bg-danger text-light"
+        }
+
+        if (project_task.priority === 2) {
+            priorityString = "MEDIUM";
+            priorityClass = "bg-warning text-light"
+        }
+
+        if (project_task.priority === 3) {
+            priorityString = "LOW";
+            priorityClass = "bg-info text-light"
+        }
 
         return (
             <div className="card mb-1 bg-light">
-
-                <div className="card-header text-primary">
-                    ID: {project_task.projectSequence} -- Priority: {project_task.priority}
+                <div className={`card-header text-primary ${priorityClass}`}>
+                    ID: {project_task.projectSequence} -- Priority: {priorityString}
                 </div>
                 
                 <div className="card-body bg-light">
