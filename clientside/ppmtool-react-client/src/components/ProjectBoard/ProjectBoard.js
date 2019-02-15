@@ -7,15 +7,55 @@ import { getBacklog } from '../../actions/backlogActions'
 
 class ProjectBoard extends Component {
 
+    constructor() {
+        super();
+        this.state = {
+            errors: {}
+        };
+    }
+
     componentDidMount() {
         const { id } = this.props.match.params;
         this.props.getBacklog(id);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.errors) {
+            this.setState({errors: nextProps.errors});
+        }
     }
 
     render() {
 
         const { id } = this.props.match.params;
         const { project_tasks }  = this.props.backlog;
+        const { errors } = this.state;
+
+        let boardContent;
+
+        const boardlgorithm = (errors, project_tasks) => {
+            if (project_tasks.length === 0) {
+                if (errors.projectNotFound) {
+                    return (
+                        <div className="alert alert-danger text-center" role="alert">
+                            {errors.projectNotFound}
+                        </div>
+                    );
+                } else {
+                    return(
+                        <div className="alert alert-info text-center" role="alert">
+                            No project tasks!
+                        </div>
+                    );    
+                }
+            } else {
+                return(
+                    <Backlog project_tasks_prop={project_tasks}/>
+                );
+            }   
+        };
+
+        boardContent = boardlgorithm(errors, project_tasks);
 
         return (
             <div className="container">
@@ -25,7 +65,7 @@ class ProjectBoard extends Component {
                 <br />
                 <hr />
 
-                <Backlog project_tasks_prop={project_tasks}/>
+                {boardContent}
 
             </div>
         )
@@ -34,11 +74,13 @@ class ProjectBoard extends Component {
 
 ProjectBoard.propTypes = {
     backlog: PropTypes.object.isRequired,
-    getBacklog: PropTypes.func.isRequired    
+    getBacklog: PropTypes.func.isRequired,
+    errors: PropTypes.object.isRequired    
 };
 
 const mapStateToProps = state => ({
-    backlog: state.backlog
+    backlog: state.backlog,
+    errors: state.errors
 });
 
 export default connect(mapStateToProps, {getBacklog})(ProjectBoard);

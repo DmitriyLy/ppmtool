@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import ProjectTask from './ProjectTasks/ProjectTask'
 
 
@@ -17,15 +16,15 @@ class Backlog extends Component {
         let doneItems = [];
 
         for(let i = 0; i < tasks.length; i++) {
-            if (tasks[i].props.project_task.status == "TO_DO") {
+            if (tasks[i].props.project_task.status === "TO_DO") {
                 todoItems.push(tasks[i])
             };
 
-            if (tasks[i].props.project_task.status == "IN_PROGRESS") {
+            if (tasks[i].props.project_task.status === "IN_PROGRESS") {
                 inProgressItem.push(tasks[i])
             };
 
-            if (tasks[i].props.project_task.status == "DONE") {
+            if (tasks[i].props.project_task.status === "DONE") {
                 doneItems.push(tasks[i])
             };
 
