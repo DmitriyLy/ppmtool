@@ -63,6 +63,19 @@ class UpdateProjectTask extends Component {
 
     onSubmit(e) {
         e.preventDefault();
+
+        const updatedTask = {
+            id: this.state.id, 
+            projectSequence: this.state.projectSequence,
+            summary: this.state.summary,
+            acceptanceCriteria: this.state.acceptanceCriteria,
+            status: this.state.status,
+            priority: this.state.priority,
+            dueDate: this.state.dueDate,
+            projectIdentifier: this.state.projectIdentifier,
+            createdAt: this.state.createdAt
+        };
+
     }
 
     render() {
