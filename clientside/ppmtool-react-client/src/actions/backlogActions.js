@@ -55,3 +55,20 @@ export const getProjectTask = (backlog_id, pt_id, history) => async dispatch => 
     }
 
 };
+
+export const updateProjectTask = (backlog_id, pt_id, project_task, history) => async dispatch => {
+    try {
+        await axios.patch(`/api/backlog/${backlog_id}/${pt_id}`, project_task);        
+        history.push(`/projectBoard/${backlog_id}`);        
+        dispatch({
+            type: GET_ERRORS,
+            payload: {}
+        });
+        
+    } catch (error) {
+        dispatch({
+            type: GET_ERRORS,
+            payload: error.response.data
+        });   
+    }
+};
