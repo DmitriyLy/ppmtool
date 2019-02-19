@@ -1,6 +1,7 @@
 package io.agintelligence.services;
 
 import io.agintelligence.domain.User;
+import io.agintelligence.exceptions.UsernameAlreadyExistsException;
 import io.agintelligence.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,11 +17,15 @@ public class UserService {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public User saveUser(User user) {
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 
+        try {
+            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 
+            return userRepository.save(user);
 
-        return userRepository.save(user);
+        } catch (Exception e) {
+            throw new UsernameAlreadyExistsException("Username '" + user.getUsername() + "' already exists");
+        }
     }
 
 }
