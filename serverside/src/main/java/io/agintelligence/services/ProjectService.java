@@ -2,9 +2,11 @@ package io.agintelligence.services;
 
 import io.agintelligence.domain.Backlog;
 import io.agintelligence.domain.Project;
+import io.agintelligence.domain.User;
 import io.agintelligence.exceptions.ProjectIdException;
 import io.agintelligence.repositories.BacklogRepository;
 import io.agintelligence.repositories.ProjectRepository;
+import io.agintelligence.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +19,19 @@ public class ProjectService {
     @Autowired
     private BacklogRepository backlogRepository;
 
-    public Project saveOrUpdateProject(Project project) {
+    @Autowired
+    private UserRepository userRepository;
+
+    public Project saveOrUpdateProject(Project project, String username) {
 
         String projectIdentifier = getProjectIdentifier(project);
 
         try {
+
+            User user = userRepository.findByUsername(username);
+
+            project.setUser(user);
+            project.setProjectLeader(user.getUsername());
             project.setProjectIdentifier(projectIdentifier);
 
             if (project.getId() == null) {
