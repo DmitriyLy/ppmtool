@@ -1,8 +1,7 @@
 package io.agintelligence.security;
 
 import io.agintelligence.domain.User;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -36,6 +35,31 @@ public class JwtTokenProvider {
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, SECRET)
                 .compact();
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token);
+            return true;
+        } catch (SignatureException ex) {
+            System.out.println("Invalid JWT Signature");
+        } catch (MalformedJwtException ex) {
+            System.out.println("Invalid JWT Token");
+        } catch (ExpiredJwtException ex) {
+            System.out.println("Expired JWT Token");
+        } catch (UnsupportedJwtException ex) {
+            System.out.println("Unsupported JWT Token");
+        } catch (IllegalArgumentException ex) {
+            System.out.println("JWT claims string empty");
+        }
+
+        return false;
+    }
+
+    public Long getUserIdFromJWT(String token) {
+        Claims claims = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody();
+        Long id = Long.parseLong((String) claims.get("id"));
+        return id;
     }
 
 }
