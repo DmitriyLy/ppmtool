@@ -4,6 +4,7 @@ import io.agintelligence.domain.Backlog;
 import io.agintelligence.domain.Project;
 import io.agintelligence.domain.User;
 import io.agintelligence.exceptions.ProjectIdException;
+import io.agintelligence.exceptions.ProjectNotFoundException;
 import io.agintelligence.repositories.BacklogRepository;
 import io.agintelligence.repositories.ProjectRepository;
 import io.agintelligence.repositories.UserRepository;
@@ -51,7 +52,7 @@ public class ProjectService {
         }
     }
 
-    public Project findByProjectIdentifier(String projectId) {
+    public Project findByProjectIdentifier(String projectId, String username) {
 
         Project project = projectRepository.findByProjectIdentifier(projectId.toUpperCase());
 
@@ -59,20 +60,19 @@ public class ProjectService {
             throw new ProjectIdException("Project ID '" + projectId + "' does not exist.");
         }
 
+        if (!project.getProjectLeader().equals(username)) {
+            throw new ProjectNotFoundException("Project not found in your account.");
+        }
+
         return project;
     }
 
-    public Iterable<Project> findAllProjects() {
-        return projectRepository.findAll();
+    public Iterable<Project> findAllProjects(String username) {
+        return projectRepository.findAllByProjectLeader(username);
     }
 
-    public void deleteProjectByIdentifier(String projectId) {
-        Project project = findByProjectIdentifier(projectId.toUpperCase());
-
-        if (project == null) {
-            throw new ProjectIdException("Cannot delete project with ID " + projectId);
-        }
-
+    public void deleteProjectByIdentifier(String projectId, String username) {
+        Project project = findByProjectIdentifier(projectId, username);
         projectRepository.delete(project);
     }
 
