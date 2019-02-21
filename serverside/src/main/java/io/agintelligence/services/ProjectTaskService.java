@@ -24,40 +24,41 @@ public class ProjectTaskService {
     @Autowired
     private ProjectRepository projectRepository;
 
-    public ProjectTask addProjectTask(String projectIdentifier, ProjectTask projectTask) {
+    @Autowired
+    private ProjectService projectService;
 
-        try {
-
-            Backlog backlog = backlogRepository.findByProjectIdentifier(projectIdentifier);
-
-            projectTask.setBacklog(backlog);
-
-            Integer backlogSequence = backlog.getPTSequence();
-            backlogSequence++;
-            backlog.setPTSequence(backlogSequence);
-
-            projectTask.setProjectSequence(projectIdentifier + "-" + backlogSequence);
-            projectTask.setProjectIdentifier(projectIdentifier);
-
-            if (projectTask.getPriority() == null || projectTask.getPriority() == 0) {
-                projectTask.setPriority(3);
-            }
-
-            if (projectTask.getStatus() == null || projectTask.getStatus() == "") {
-                projectTask.setStatus("TO_DO");
-            }
+    public ProjectTask addProjectTask(String projectIdentifier, ProjectTask projectTask, String username) {
 
 
-            return projectTaskRepository.save(projectTask);
+        Backlog backlog = projectService.findByProjectIdentifier(projectIdentifier, username).getBacklog();
 
-        } catch (Exception e) {
-            throw new ProjectNotFoundException("Project not found");
+        projectTask.setBacklog(backlog);
+
+        Integer backlogSequence = backlog.getPTSequence();
+        backlogSequence++;
+        backlog.setPTSequence(backlogSequence);
+
+        projectTask.setProjectSequence(projectIdentifier + "-" + backlogSequence);
+        projectTask.setProjectIdentifier(projectIdentifier);
+
+        if (projectTask.getPriority() == null || projectTask.getPriority() == 0) {
+            projectTask.setPriority(3);
         }
+
+        if (projectTask.getStatus() == null || projectTask.getStatus() == "") {
+            projectTask.setStatus("TO_DO");
+        }
+
+
+        return projectTaskRepository.save(projectTask);
+
     }
 
-    public List<ProjectTask> findBacklogById(String backlog_id) {
+    public List<ProjectTask> findBacklogById(String backlog_id, String username) {
 
-        Project project = projectRepository.findByProjectIdentifier(backlog_id);
+        Project project = projectService.findByProjectIdentifier(backlog_id, username);
+
+        //Project project = projectRepository.findByProjectIdentifier(backlog_id);
 
         if (project == null) {
             throw new ProjectNotFoundException("Project with ID: '" + backlog_id + "' does not exist");
