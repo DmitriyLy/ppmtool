@@ -32,6 +32,12 @@ class Register extends Component {
         }
     }
 
+    componentDidMount() {
+        if (this.props.security.validToken) {
+            this.props.history.push("/dashboard");
+        }
+    }
+
     onSubmit(e) {
         e.preventDefault();
 
@@ -119,10 +125,12 @@ class Register extends Component {
 
 Register.propTypes = {
     createNewUser: PropTypes.func.isRequired,
+    security: PropTypes.object.isRequired,
     errors: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
+    security: state.security,
     errors: state.errors
 });
 
