@@ -26,6 +26,7 @@ public class ProjectTask {
 
     private Integer priority;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date dueDate;
 
     @Column(updatable = false)
